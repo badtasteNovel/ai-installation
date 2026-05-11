@@ -1,0 +1,71 @@
+version: '3'
+
+dotenv:
+  - .env.task
+
+vars:
+  # 優先從 .env.task 讀取，若無則使用預設值
+  VENV_DIR: '{{.VENV_DIR | default "~/.aider_env"}}'
+  GEMINI_MODEL: '{{.GEMINI_MODEL | default "gemini/gemini-2.5-flash"}}'
+  BASHRC: '{{.HOME}}/.bashrc'
+
+tasks:
+  default:
+    desc: "一鍵安裝 Aider 環境"
+    cmds:
+      - task: apt-update
+      - task: install-dependencies
+      - task: setup-aider
+      - task: path-aider
+
+  apt-update:
+    internal: true
+    cmds:
+      - sudo apt update
+
+  install-dependencies:
+    desc: "檢查並安裝 Python 虛擬環境與 Git"
+    cmds:
+      - if ! command -v git &> /dev/null; then sudo apt install -y git; fi
+      - sudo apt install -y python3-pip python3-venv
+
+  setup-aider:
+    desc: "建立 venv 並安裝最新版 Aider"
+    status:
+      - test -f {{.VENV_DIR}}/bin/aider
+    cmds:
+      - python3 -m venv {{.VENV_DIR}}
+      - "{{.VENV_DIR}}/bin/pip install -U pip"
+      - "{{.VENV_DIR}}/bin/pip install aider-chat"
+      - echo "Aider 隔離環境已建立於 {{.VENV_DIR}}"
+
+  path-aider:
+    desc: "將 Aider 快捷指令與 Key 持久化到 .bashrc"
+    cmds:
+      - |
+        # 1. 檢查變數（Task 會自動從 .env.task 讀入環境變數）
+        if [ -z "$GEMINI_API_KEY" ]; then
+          echo "錯誤: .env.task 中找不到 GEMINI_API_KEY"
+          exit 1
+        fi
+
+        # 2. 處理環境變數 (GEMINI_API_KEY)
+        if grep -q "export GEMINI_API_KEY=" {{.BASHRC}}; then
+          sed -i "s|export GEMINI_API_KEY=.*|export GEMINI_API_KEY=$GEMINI_API_KEY|" {{.BASHRC}}
+        else
+          echo "export GEMINI_API_KEY=$GEMINI_API_KEY" >> {{.BASHRC}}
+        fi
+
+        # 3. 處理 Alias
+        # 注意：這裡使用 {{.VENV_DIR}} 確保路徑與安裝時一致
+        AI_ALIAS="alias aider='{{.VENV_DIR}}/bin/aider --model {{.GEMINI_MODEL}} --watch-files'"
+        
+        if grep -q "alias aider=" {{.BASHRC}}; then
+          sed -i "s|alias aider=.*|$AI_ALIAS|" {{.BASHRC}}
+        else
+          echo "$AI_ALIAS" >> {{.BASHRC}}
+        fi
+
+        echo "---"
+        echo "✅ 配置完成！請執行: source ~/.bashrc"
+        echo "之後在專案目錄打 'aider .' 即可啟動。"
