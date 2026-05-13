@@ -1,0 +1,43 @@
+# --- 資源與編譯輸出 (大量的 Token 殺手) ---
+/public/build/
+/public/hot
+/public/storage
+/public/*.js
+/public/*.css
+/resources/css/
+/resources/js/
+/resources/fonts/
+/resources/images/
+
+# --- 框架產生的資料 (噪音) ---
+/storage/
+/vendor/
+/node_modules/
+/bootstrap/cache/
+
+# --- 測試與覆蓋率報告 ---
+/tests/Browser/screenshots/
+/tests/Browser/console/
+/.phpunit.cache/
+/storage/framework/testing/
+
+# --- 環境與金鑰 (安全性與無意義資訊) ---
+.env
+.env.backup
+.env.production
+.phar
+*.key
+
+# --- 系統與開發工具檔案 ---
+.idea/
+.vscode/
+.docker/
+*.log
+*.sqlite
+*.bak
+*.swp
+.DS_Store
+
+# --- 選項：如果你不想讓 AI 看你的資料庫遷移細節 (可選) ---
+# database/migrations/
+# database/seeders/
