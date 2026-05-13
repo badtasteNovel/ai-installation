@@ -12,3 +12,9 @@ sh -c "$(curl -ssL https://taskfile.dev/install.sh)" -- -d -b /tmp && sudo mv /t
 
 ### 2. 環境配置
 在專案根目錄建立 `.env.task` 檔案，並填入你的金鑰：
+
+# 操作
+- /add 增加某一檔案，增加token使用量，可重新讀取檔案內容，如果是aider改的不必再更新內容
+- /drop 刪除某一檔案，減少token使用量
+- /clear 重置context，減少token使用量
+- /refresh 讓aider 重新讀取檔案內容

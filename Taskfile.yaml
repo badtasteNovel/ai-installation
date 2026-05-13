@@ -58,7 +58,7 @@ tasks:
 
         # 3. 處理 Alias
         # 注意：這裡使用 {{.VENV_DIR}} 確保路徑與安裝時一致
-        AI_ALIAS="alias aider='{{.VENV_DIR}}/bin/aider --model {{.GEMINI_MODEL}} --watch-files'"
+        AI_ALIAS="alias aider='{{.VENV_DIR}}/bin/aider --model {{.GEMINI_MODEL}} --map-tokens {{.MAP_TOKEN}} --no-auto-commits'"
         
         if grep -q "alias aider=" {{.BASHRC}}; then
           sed -i "s|alias aider=.*|$AI_ALIAS|" {{.BASHRC}}
